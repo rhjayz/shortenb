@@ -1,0 +1,134 @@
+{{ define "titleTemplates"}}
+Shortlink
+{{ end }}
+
+{{define "contentTemplates"}}
+<br>
+<br>
+  <div class="col s12">
+    <div class="card dashboard-card center-align">
+            <div class="card-content">
+               <div class="right">
+                <a href="#createLink" class="right-align valign-wrapper modal-trigger">
+                    <i class="material-icons">add_circle</i>
+                    <span>Add Link</span>
+                </a>
+                </div>
+                <br>
+                <h5 class="center-align">Your Shortened Links</h5>
+    <div class="table-container">
+        <table class="highlight dataTables_filter" id="myTable">
+      <thead class="purple lighten-5">
+        <tr>
+          <th>Short</th>
+          <th>Original</th>
+          <th>Clicks</th>
+          <th>Domain</th>
+          <th>Created</th>
+          <th class="center-align"><center>Action</center></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ range .Data }}
+        <tr>
+          <td class="truncate-td">
+           <a href="/{{ .Shortlink.ShortCode }}" target="_blank">/{{ .Shortlink.ShortCode }}</a>
+          </td>
+          <td class="truncate-td">
+            <a href="{{.Shortlink.OriginalUrl}}">{{.Shortlink.OriginalUrl}}</a>
+          </td>
+          <td>{{ .ClickCount }}</td>
+          <td>{{ .Shortlink.CustomDomain }}</td>
+          <td>{{ .Shortlink.CreatedAt.Format "02 Jan 2006" }}</td>
+          <td class="center-align valign-wrapper">
+            <a class="btn-flat tooltipped" data-tooltip="Copy" onclick="copyToClipboard('{{ .Shortlink.CustomDomain }}/{{ .Shortlink.ShortCode }}')">
+              <i class="material-icons">content_copy</i>
+            </a>
+            <a class="btn-flat red-text tooltipped" data-tooltip="Delete" onclick="deleteLink('{{ .Shortlink.ID }}')">
+              <i class="material-icons">delete</i>
+            </a>
+            <a class="btn-flat purple-text tooltipped" data-tooltip="Detail" onclick="detailLink('{{ .Shortlink.ID }}')">
+              <i class="material-icons">read_more</i>
+            </a>
+          </td>
+        </tr>
+        {{ end }}
+        <!-- Repeat for each link -->
+      </tbody>
+        </table>
+    </div>
+            </div>
+          </div>
+  </div>
+</div>
+<!-- Modal -->
+  <div id="createLink" class="modal">
+     <form id="shortenform" >
+    <div class="modal-content">
+    <h4>Create Shortlink</h4>
+      <div class="input-field">
+        <input type="url" id="original_url" name="originalurl" required>
+        <label for="original_url">Original URL</label>
+      </div>
+      <div class="input-field">
+        <input type="text" id="custom_domain" name="customdomain">
+        <label for="custom_domain">Custom Domain (optional)</label>
+      </div>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-close waves-effect btn-flat">Cancel</a>
+    <button type="submit" class="waves-effect btn btn-primary">Add</button>
+  </div>
+  </form>
+  </div>
+<!-- End Modal -->
+<script>
+    function detailLink (id){
+      window.location.href = "/shortlink/detail/"+id;
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            M.toast({ html: 'Link copied!' });
+        });
+    }
+    async function deleteLink(id) {
+        if (!confirm("Are you sure to delete this link?")) return;
+          try {
+             const res = await fetch("/shortlink/destroy/"+ id,{
+              method:"POST",
+              headers:{"Content-Type": "application/json"},
+          })
+
+            const data = await res.json();
+             M.toast({ html: data.message });
+    
+          } catch (error) {
+              M.toast({ html: error || "Error" });
+          }
+    }
+
+    document.getElementById("shortenform").onsubmit = async e => {
+         const body = JSON.stringify(Object.fromEntries(new FormData(e.target)));
+        
+         try {
+            const res = await fetch("/shortlink/store",{
+                method:"POST",
+                headers:{ "Content-Type": "application/json"},
+                body,
+            })
+
+            const data = await res.json();
+
+            M.toast({html: data.message});
+            
+         } catch (error) {
+            M.toast({html: error || "Something wrong"});
+         }
+        
+        }
+
+
+
+</script>
+{{end}}

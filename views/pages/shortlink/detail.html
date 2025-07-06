@@ -1,0 +1,72 @@
+{{ define "titleTemplates" }}
+Shortlink Detail
+{{ end }}
+
+{{ define "contentTemplates" }}
+<br><br>
+<div class="col s12">
+  <div class="card dashboard-card center-align">
+    <div class="card-content">
+      <h5 class="center-align">Shortlink Detail</h5>
+      <div class="row">
+        <form id="updateForm" class="col s12">
+          <!-- Shortcode (readonly) -->
+          <div class="input-field col s12">
+            <input id="shortcode" type="text" value="{{ .Data.ShortCode }}" disabled>
+            <label for="shortcode" class="active">Shortcode</label>
+          </div>
+
+          <!-- Original URL (readonly) -->
+          <div class="input-field col s12">
+            <input id="originalurl" type="url" value="{{ .Data.OriginalUrl }}" disabled>
+            <label for="originalurl" class="active">Original URL</label>
+          </div>
+
+          <!-- Custom Domain (editable) -->
+          <div class="input-field col s12">
+            <input id="customdomain" type="text" name="customdomain" value="{{ .Data.CustomDomain }}">
+            <label for="customdomain" class="active">Custom Domain</label>
+          </div>
+
+          <!-- Created At (readonly) -->
+          <div class="input-field col s12">
+            <input type="text" value="{{ .Data.CreatedAt.Format "02 Jan 2006 15:04" }}" disabled>
+            <label class="active">Created At</label>
+          </div>
+
+          <div class="col s12">
+            <button type="submit" class="btn green">Update</button>
+            <a href="/shortlink" class="btn-flat grey-text">Back</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Submit form update domain
+  document.getElementById("updateForm").onsubmit = async function (e) {
+    e.preventDefault();
+    const body = JSON.stringify({
+      customdomain: document.getElementById("customdomain").value
+    });
+
+    try {
+      const res = await fetch("/shortlink/update/{{ .Data.ID }}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+      });
+
+      const data = await res.json();
+      M.toast({ html: data.message || "Data Has been Updated" });
+        if (res.ok) {
+         setTimeout(() => window.location.href = "/shortlink", 1500)
+      }
+    } catch (err) {
+      M.toast({ html: "Update failed" });
+    }
+  };
+</script>
+{{ end }}

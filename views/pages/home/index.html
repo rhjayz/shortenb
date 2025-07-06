@@ -1,0 +1,83 @@
+{{ define "titleTemplates"}}
+Dashboard
+{{end}}
+
+{{ define "contentTemplates" }}
+<br>
+<br>
+ <div class="col s12 l4 mt6">
+          <div class="card dashboard-card center-align">
+            <div class="card-content">
+              <span class="card-title">Create</span>
+              <i class="material-icons medium">auto_stories</i>
+            </div>
+            <div class="card-action">
+              <p style="font-size: 30px; margin: 0; padding: 0;">0</p>
+            </div>
+          </div>
+    </div>
+      <div class="col s12 l4 mt6">
+          <div class="card dashboard-card center-align">
+            <div class="card-content">
+              <span class="card-title">Click</span>
+              <i class="material-icons medium">ads_click</i>
+            </div>
+            <div class="card-action">
+              <p style="font-size: 30px; margin: 0; padding: 0;">0</p>
+            </div>
+          </div>
+    </div>
+      <div class="col s12 l4 mt6">
+          <div class="card dashboard-card center-align">
+            <div class="card-content">
+              <span class="card-title">Custom</span>
+              <i class="material-icons medium">tune</i>
+            </div>
+            <div class="card-action">
+              <p style="font-size: 30px; margin: 0; padding: 0;">0</p>
+            </div>
+          </div>
+    </div>
+    <div class="col s12">
+         <div class="card dashboard-card center-align">
+            <div class="card-content">
+              <canvas id="myChart" width="400" height="200"></canvas>
+            </div>
+          </div>
+    </div>
+    <script>
+  const ctx = document.getElementById('myChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar'],
+      datasets: [{
+        label: 'Clicker',
+        data: [10, 20, 15],
+        backgroundColor: '#3949ab',     // primary
+        borderRadius: 5,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      plugins: {
+        legend: {
+          labels: {
+            color: '#3949ab'           // primary text
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#3949ab' }, // primary
+          grid: { color: '#f7f1e3' }   // bg-color
+        },
+        y: {
+          ticks: { color: '#3949ab' },
+          grid: { color: '#f7f1e3' }
+        }
+      }
+    }
+  });
+</script>
+{{ end }}

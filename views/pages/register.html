@@ -1,0 +1,76 @@
+{{ define "content" }}
+<div class="container">
+  <div class="row">
+    <div class="col s12 m6 offset-m3">
+      <div class="card register-card">
+        <h5 class="center-align">
+          <img src="/assets/shortb.png"
+               alt="ShortB Logo"
+               style="height: 40px; vertical-align: middle; margin-right: 0px;">
+          ShortB
+        </h5>
+        <form id="register">
+          <div class="input-field">
+            <input id="name" type="text" class="validate" name="name" required />
+            <label for="name">Name</label>
+          </div>
+          <div class="input-field">
+            <input id="email" type="email" class="validate" name="email" />
+            <label for="email">Email</label>
+          </div>
+          <div class="input-field">
+            <input id="password" type="password" class="validate" name="password" required />
+            <label for="password">Password</label>
+          </div>
+          <div class="input-field">
+            <input id="confirm_password" type="password" class="validate" required />
+            <label for="confirm_password">Confirm Password</label>
+          </div>
+          <span></span>
+          <div class="center-align">
+            <button type="submit" class="btn btn-primary waves-effect waves-light">Sign Up</button>
+            <br><br>
+            <a href="/login">
+              Already have an account?
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+   document.getElementById("register").onsubmit = async e =>{
+    e.preventDefault();
+
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm_password").value;
+
+    if (password !== confirm) {
+    M.toast({ html: "Password does not match" });
+    return;
+    }
+
+    const body = JSON.stringify(Object.fromEntries(new FormData(e.target)));
+
+    try {
+      const res = await fetch ("/register/store",{
+      method:"POST",
+      headers:{ "Content-Type": "application/json"},
+      body  
+      });
+
+      const data = await res.json();
+
+      M.toast({html: data.message});
+      if (res.ok) {
+         setTimeout(() => window.location.href = "/login", 1500)
+      }
+    } catch (error) {
+      M.toast({ html: error.message || "Terjadi kesalahan" });
+    }
+    
+  };
+</script>
+
+{{ end }}

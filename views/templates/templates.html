@@ -1,0 +1,135 @@
+{{define "content"}}
+ <style>
+    :root {
+        --primary-color: #3949ab;
+        --secondary-color: #ffffff;
+        --bg-color: #f7f1e3;
+    }
+    body {
+      background-color: var(--bg-color);
+    }
+    .navbar-fixed .nav-wrapper {
+      background-color: var(--primary-color) !important;
+    }
+    .sidenav {
+      background-color: var(--primary-color);
+    }
+    .sidenav .user-view,
+    .sidenav li > a {
+      color: var(--secondary-color) !important;
+    }
+    .sidenav li > a:hover {
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    .dashboard-card .card-content {
+      background-color: var(--secondary-color);
+      color: #333;
+    }
+   #page-wrapper.fade-out {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+  </style>
+  <div>
+    <div class="navbar-fixed">
+    <nav>
+      <div class="nav-wrapper">
+        <a href="#" data-target="slide-out" class="sidenav-trigger show-on-large">
+          <i class="material-icons">menu</i>
+        </a>
+        <a href="#" class="brand-logo center">
+            {{ block "titleTemplates" .}} 
+            
+            {{end}}
+        </a>
+        <ul id="nav-mobile" class="right">
+          <li>
+            <a onclick="logout()" class="btn-flat white-text">
+              <i class="material-icons left">exit_to_app</i>Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Sidebar -->
+  <ul id="slide-out" class="sidenav">
+    <li>
+      <div class="user-view center-align">
+        <a href="#user">
+          <center>
+          {{if not .User.Image }}
+            <img class="circle center" src="/assets/icon/user.png" alt="User" />
+          {{else}}
+            <img class="circle center" src="{{.User.Image}}" alt="User" />
+          {{end}}
+          </center>
+        </a>
+        <a href="#name"><span class="white-text name">{{ .User.Name }}</span></a>
+        <a href="#email"><span class="white-text email">{{ .User.Email }}</span></a>
+      </div>
+    </li>
+    <li><a href="/home"><i class="material-icons">dashboard</i>Dashboard</a></li>
+    <li><a href="/shortlink"><i class="material-icons">add_link</i>Shorter Link</a></li>
+    <li><a href="/report"><i class="material-icons">insert_chart</i>Reports</a></li>
+    <li><div class="divider"></div></li>
+    <li><a href="/user"><i class="material-icons">person</i>Account</a></li>
+  </ul>
+
+  <!-- Main Content -->
+  <main>
+    <div class="container">
+      <div class="row">
+        {{block "contentTemplates" .}}
+
+        
+        {{ end }}
+
+      </div>
+    </div>
+  </main>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var elems = document.querySelectorAll('.sidenav');
+      M.Sidenav.init(elems, { edge: 'left' });
+    });
+
+    async function logout() {
+  if (!confirm("Are u sure?")) return;
+
+  try {
+    const res = await fetch("/logout", {
+      method: "POST",
+    });
+
+    if (res.ok) {
+      M.toast({ html: "Berhasil logout" });
+      setTimeout(() => (window.location.href = "/login"), 1000);
+    } else {
+      M.toast({ html: "Gagal logout" });
+    }
+  } catch (err) {
+    M.toast({ html: "Terjadi kesalahan" });
+  }
+}
+
+ document.addEventListener('DOMContentLoaded', function () {
+  const sidenavs = document.querySelectorAll('.sidenav');
+  const instances = M.Sidenav.init(sidenavs, { edge: 'left' });
+
+  document.querySelectorAll('.sidenav a[href]').forEach(link => {
+    link.addEventListener('click', function () {
+      const instance = M.Sidenav.getInstance(document.querySelector('.sidenav'));
+
+      if (instance) instance.close();
+      // tidak perlu preventDefault, langsung lanjut ke href
+    });
+  });
+});
+
+  </script>
+   
+  {{ end }}
+
