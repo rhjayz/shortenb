@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"shortb/config"
 
-	// "shortb/models"
+	"shortb/models"
 	"shortb/routes"
 )
 
@@ -14,12 +14,12 @@ func main() {
 
 	// Nyalakan jika ingin Migrate
 
-	// err := config.DB.AutoMigrate(&models.User{}, &models.Session{}, &models.Clicklogs{}, &models.Shortlink{})
-	// if err != nil {
-	// 	log.Fatal("❌ Gagal migrasi:", err)
-	// } else {
-	// 	log.Println("✅ Migrasi sukses!")
-	// }
+	err := config.DB.AutoMigrate(&models.User{}, &models.Session{}, &models.Clicklogs{}, &models.Shortlink{})
+	if err != nil {
+		log.Fatal("❌ Gagal migrasi:", err)
+	} else {
+		log.Println("✅ Migrasi sukses!")
+	}
 
 	r := routes.SetupRoutes()
 
