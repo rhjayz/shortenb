@@ -102,6 +102,9 @@ Shortlink
 
             const data = await res.json();
              M.toast({ html: data.message });
+              if (res.ok) {
+                setTimeout(() => window.location.reload(), 1500)
+                }
     
           } catch (error) {
               M.toast({ html: error || "Error" });
@@ -121,6 +124,9 @@ Shortlink
             const data = await res.json();
 
             M.toast({html: data.message});
+              if (res.ok) {
+                setTimeout(() => window.location.reload(), 1500)
+                }
             
          } catch (error) {
             M.toast({html: error || "Something wrong"});
