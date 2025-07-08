@@ -1,22 +1,23 @@
-# Pakai image Golang resmi
 FROM golang:1.24
 
-# Bikin folder kerja di container
+# Install air secara global (pakai GOBIN biar masuk ke PATH)
+ENV GOBIN=/go/bin
+RUN go install github.com/air-verse/air@latest
+
+
+# Set working directory
 WORKDIR /app
 
-# Copy dependency file dulu
-COPY go.mod ./
-COPY go.sum ./
+# Copy go.mod dulu agar cache efektif
+COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy semua source code
+# Copy semua file project
 COPY . .
 
-# Build aplikasi Golang kamu
-RUN go build -o main .
-
-# Buka port 8080 (ubah sesuai app kamu)
+# Expose port kalau kamu butuh akses dari luar (misal :8080)
 EXPOSE 8080
 
-# Jalankan aplikasi
-CMD ["./main"]
+# Jalankan air
+ENTRYPOINT ["/go/bin/air"]
+

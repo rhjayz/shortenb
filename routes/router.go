@@ -28,14 +28,16 @@ func SetupRoutes() *mux.Router {
 	r.Handle("/logout", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.Logout))).Methods("POST")
 	//Home
 	r.Handle("/home", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.Index))).Methods("GET")
+	//Account
+	r.Handle("/account", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.IndexUser))).Methods("GET")
+	r.Handle("/account/update", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.UpdateUser))).Methods("POST")
 	//Shorlink
 	r.Handle("/shortlink", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.IndexShortLink))).Methods("GET")
 	r.Handle("/shortlink/store", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.ShortLinkStore))).Methods("POST")
-	r.HandleFunc("/{code}", handlers.RedirectClickLogs).Methods("GET")
 	r.Handle("/shortlink/destroy/{id}", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.ShortLinkDestroy))).Methods("POST")
 	r.Handle("/shortlink/detail/{id}", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.ShortLinkDetail))).Methods("GET")
 	r.Handle("/shortlink/update/{id}", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.ShortLinkUpdate))).Methods("POST")
-	//User
-	r.Handle("/user", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.IndexUser))).Methods("POST")
+	r.HandleFunc("/rj/{code}", handlers.RedirectClickLogs).Methods("GET")
+
 	return r
 }

@@ -32,7 +32,7 @@ Shortlink
         {{ range .Data }}
         <tr>
           <td class="truncate-td">
-           <a href="/{{ .Shortlink.ShortCode }}" target="_blank">/{{ .Shortlink.ShortCode }}</a>
+           <a href="rj/{{ .Shortlink.ShortCode }}" target="_blank">/{{ .Shortlink.ShortCode }}</a>
           </td>
           <td class="truncate-td">
             <a href="{{.Shortlink.OriginalUrl}}">{{.Shortlink.OriginalUrl}}</a>
@@ -41,7 +41,7 @@ Shortlink
           <td>{{ .Shortlink.CustomDomain }}</td>
           <td>{{ .Shortlink.CreatedAt.Format "02 Jan 2006" }}</td>
           <td class="center-align valign-wrapper">
-            <a class="btn-flat tooltipped" data-tooltip="Copy" onclick="copyToClipboard('{{ .Shortlink.CustomDomain }}/{{ .Shortlink.ShortCode }}')">
+            <a class="btn-flat tooltipped" data-tooltip="Copy" onclick="copyToClipboard('{{ .Shortlink.CustomDomain }}/rj/{{ .Shortlink.ShortCode }}')">
               <i class="material-icons">content_copy</i>
             </a>
             <a class="btn-flat red-text tooltipped" data-tooltip="Delete" onclick="deleteLink('{{ .Shortlink.ID }}')">

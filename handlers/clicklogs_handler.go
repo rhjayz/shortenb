@@ -13,9 +13,11 @@ import (
 func RedirectClickLogs(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	code := vars["code"]
+	println("CODE DITERIMA:", code)
 
 	var shortlink models.Shortlink
 	if err := config.DB.Where("short_code = ?", code).First(&shortlink).Error; err != nil {
+		println("SHORTLINK TIDAK DITEMUKAN:", err.Error())
 		http.NotFound(w, r)
 		return
 	}
@@ -30,6 +32,7 @@ func RedirectClickLogs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	config.DB.Create(&log)
+	println("REDIRECT KE:", *shortlink.OriginalUrl)
 
 	http.Redirect(w, r, *shortlink.OriginalUrl, http.StatusFound)
 }

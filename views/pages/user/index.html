@@ -1,0 +1,166 @@
+{{ define "titleTemplates" }}
+Profile
+{{ end }}
+
+{{ define "contentTemplates" }}
+<style>
+ .cover {
+      height: 200px;
+      background: var(--primary-color);
+      position: relative;
+    }
+    .avatar {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 5px solid var(--secondary-color);
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--secondary-color);
+    }
+    .profile-header {
+      text-align: center;
+      padding-top: 20px;
+      margin-bottom: 20px;
+    }
+    .btn-primary {
+      background-color: var(--primary-color);
+    }
+    .btn-primary:hover {
+      background-color: #303f9f;
+    }
+    .field-label {
+      font-weight: bold;
+      color: #555;
+    }
+    .field-value {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+</style>
+<br><br>
+<div class="container">
+  <div class="card">
+    <div class="card-content">
+       <div class="cover"></div>
+    <div class="profile-header p0 m0">
+      {{if .Data.Image}}
+      <img
+        src="{{.Data.Image }}"
+        alt="Avatar"
+        class="avatar responsive-img"
+      />{{else}}
+       <img
+        src="/assets/icon/user.png"
+        alt="Avatar"
+        class="avatar responsive-img"
+      />
+      {{end}}
+      <h4 style="color: var(--primary-color);">{{.Data.Name}}</h4>
+      <p>{{.User.Email}}</p>
+    </div>
+
+    <div class="card">
+      <div class="card-content">
+        <h5 style="color: var(--primary-color);">Account Details</h5>
+        <div id="display-mode">
+          <p><span class="field-label">Name:</span> <span class="field-value" id="disp-name">{{.User.Name}}</span></p>
+          <p><span class="field-label">Email:</span> <span class="field-value" id="disp-email">{{.User.Email}}</span></p>
+          <p><span class="field-label">Password:</span> <span class="field-value">••••••••</span></p>
+          <p><span class="field-label">Image:</span><br/>
+            {{if .Data.Image}}
+            <img src="{{.Data.Image}}" alt="Avatar" class="responsive-img" style="width:100px;border-radius:50%;"/>
+            {{else}}
+             <img src="/assets/icon/user.png" alt="Avatar" class="responsive-img" style="width:100px;border-radius:50%;"/>
+            {{end}}
+          </p>
+          <div class="center-align" style="margin-top:20px;">
+            <button id="edit-btn" class="btn btn-primary waves-effect waves-light">
+              <i class="material-icons left">edit</i>Edit
+            </button>
+          </div>
+        </div>
+
+        <div id="edit-mode" style="display:none;">
+          <form id="accountForm"  enctype="multipart/form-data" method="POST">
+            <div class="input-field">
+              <input id="name" name="name" type="text" class="validate" value="{{.Data.Name}}" required />
+              <label for="name" class="active">Name</label>
+            </div>
+            <div class="input-field">
+              <input id="email" name="email" type="email" class="validate" value="{{.Data.Email}}" required />
+              <label for="email" class="active">Email</label>
+            </div>
+            <div class="input-field">
+              <input id="password" name="password" type="password" class="validate" />
+              <label for="password">Password (kosongkan jika tidak diubah)</label>
+            </div>
+            <div class="file-field input-field">
+              <div class="btn btn-flat btn-primary">
+                <span><i class="material-icons left">image</i>Upload Image</span>
+                <input type="file" name="image" accept="image/*" />
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text" placeholder="Pilih foto baru (opsional)" />
+              </div>
+            </div>
+            <div class="center-align" style="margin-top:20px;">
+              <button type="submit" class="btn btn-primary waves-effect waves-light">
+                <i class="material-icons left">save</i>Save
+              </button>
+              <button type="button" id="cancel-btn" class="btn grey lighten-1 waves-effect waves-light" style="margin-left:10px;">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  
+    </div>
+  </div>
+</div>
+ <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      M.updateTextFields();
+      const editBtn = document.getElementById('edit-btn');
+      const cancelBtn = document.getElementById('cancel-btn');
+      const displayMode = document.getElementById('display-mode');
+      const editMode = document.getElementById('edit-mode');
+
+      editBtn.addEventListener('click', () => {
+        displayMode.style.display = 'none';
+        editMode.style.display = 'block';
+      });
+      cancelBtn.addEventListener('click', () => {
+        editMode.style.display = 'none';
+        displayMode.style.display = 'block';
+      });
+    });
+
+  document.getElementById("accountForm").onsubmit = async function (e) {
+    e.preventDefault();
+
+    const body =new FormData(e.target);
+    try {
+      const res = await fetch("/account/update", {
+        method: "POST",
+        body:body,
+      });
+
+      const data = await res.json();
+      M.toast({ html: data.message || "Data Has been Updated" });
+        if (res.ok) {
+         setTimeout(() => window.location.reload() , 1500)
+      }
+    } catch (err) {
+      M.toast({ html: "Update failed" });
+    }
+  };
+
+  </script>
+
+
+{{ end }}
