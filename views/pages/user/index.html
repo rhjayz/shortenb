@@ -69,13 +69,6 @@ Profile
           <p><span class="field-label">Name:</span> <span class="field-value" id="disp-name">{{.User.Name}}</span></p>
           <p><span class="field-label">Email:</span> <span class="field-value" id="disp-email">{{.User.Email}}</span></p>
           <p><span class="field-label">Password:</span> <span class="field-value">••••••••</span></p>
-          <p><span class="field-label">Image:</span><br/>
-            {{if .Data.Image}}
-            <img src="{{.Data.Image}}" alt="Avatar" class="responsive-img" style="width:100px;border-radius:50%;"/>
-            {{else}}
-             <img src="/assets/icon/user.png" alt="Avatar" class="responsive-img" style="width:100px;border-radius:50%;"/>
-            {{end}}
-          </p>
           <div class="center-align" style="margin-top:20px;">
             <button id="edit-btn" class="btn btn-primary waves-effect waves-light">
               <i class="material-icons left">edit</i>Edit

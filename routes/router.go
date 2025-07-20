@@ -31,6 +31,10 @@ func SetupRoutes() *mux.Router {
 	//Account
 	r.Handle("/account", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.IndexUser))).Methods("GET")
 	r.Handle("/account/update", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.UpdateUser))).Methods("POST")
+	//Report
+	r.Handle("/report", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.IndexReport))).Methods("GET")
+	r.Handle("/report/date", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.ReportFilterDate))).Methods("POST")
+	r.Handle("/report/month", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.ReportFilterMonth))).Methods("POST")
 	//Shorlink
 	r.Handle("/shortlink", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.IndexShortLink))).Methods("GET")
 	r.Handle("/shortlink/store", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.ShortLinkStore))).Methods("POST")

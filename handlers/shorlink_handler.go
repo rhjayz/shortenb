@@ -102,7 +102,7 @@ func ShortLinkStore(w http.ResponseWriter, r *http.Request) {
 	var input ShortlinkProps
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil || input.OriginalURL == "" || input.CDomain == "" {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		http.Error(w, "Invalid Input", http.StatusBadRequest)
 		return
 	}
 

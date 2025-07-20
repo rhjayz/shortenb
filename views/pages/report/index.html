@@ -1,0 +1,255 @@
+{{define "titleTemplates"}}
+Report
+{{end}}
+
+{{define "contentTemplates"}}
+  <style>
+    .tab-content {
+      padding-top: 20px;
+    }
+
+    #cardResult {
+    display: none;
+    }
+  </style>
+  <br>
+  <br>
+  <div class="col s12">
+    <div class="card dashboard-card center-align" style="height: 230px;">
+        <div class="card-content">      
+          <ul class="tabs">
+            <li class="tab col s6"><a class="active" href="#filterTanggal">Filter Tanggal</a></li>
+            <li class="tab col s6"><a href="#filterBulan">Filter Bulan</a></li>
+          </ul>
+              <div id="filterTanggal" class="col s12 tab-content">
+            <form id="actionFilterTanggal" action="/report/date" method="GET">
+              <div class="row">
+                <div class="input-field col s6">
+                  <input type="date" name="start_date" id="start_date" required>
+                  <label for="start_date" class="active">Tanggal Mulai</label>
+                </div>
+                <div class="input-field col s6">
+                  <input type="date" name="end_date" id="end_date" required>
+                  <label for="end_date" class="active">Tanggal Akhir</label>
+                </div>
+              </div>
+                <button type="submit" class="btn waves-effect waves-light"><i class="material-icons left">search</i>Filter</button>
+            </form>
+          </div>
+    <!-- Tab: Filter Bulan -->
+          <div id="filterBulan" class="col s12 tab-content">
+            <form id="actionFilterBulan" action="/report/month" method="GET">
+              <div class="row">
+                <div class="input-field col s6">
+                  <select name="month" required>
+                    <option value="" disabled selected>Pilih Bulan</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                  </select>
+                  <label>Bulan</label>
+              </div>
+              <div class="input-field col s6">
+                <input type="number" name="year" id="tahun" required min="2000" max="2099">
+                <label for="tahun">Tahun</label>
+              </div>
+              </div>
+                <button type="submit" class="btn waves-effect waves-light"><i class="material-icons left">search</i>Filter</button>
+                </form>
+              </div> 
+        </div>
+    </div>
+
+     <div class="card dashboard-card center-align" id="cardResult">
+        <div class="card-title">
+          Result
+        </div>  
+        <div class="card-content">
+        </div>
+        <button class="btn green darken-3" style="width: 100%;" id="btnExport">Export Excel</button>
+    </div>
+  </div>
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var tabs = document.querySelectorAll('.tabs');
+    M.Tabs.init(tabs);
+
+    var selects = document.querySelectorAll('select');
+    M.FormSelect.init(selects);
+    
+    const tabLinks = document.querySelectorAll('.tabs a');
+    tabLinks.forEach(tabHide => {
+      tabHide.addEventListener('click', () =>{
+          const card = document.getElementById('cardResult');
+          if (card) {
+          card.style.display = 'none';
+        }
+      });
+    });
+  
+    
+  });
+
+  document.getElementById('actionFilterTanggal').onsubmit = async e => {
+    e.preventDefault();  
+     await fetchAndShowTable({
+    url: "/report/date",
+    method: "POST",
+    formData: new FormData(e.target),
+    cardId: "cardResult"
+    });
+  }
+   
+    document.getElementById('actionFilterBulan').onsubmit = async e => {
+    e.preventDefault();  
+     await fetchAndShowTable({
+    url: "/report/month",
+    method: "POST",
+    formData: new FormData(e.target),
+    cardId: "cardResult"
+    });
+  }
+
+  async function fetchAndShowTable({url, method = "POST", formData, cardId}) {
+  try {
+    const body = JSON.stringify(Object.fromEntries(formData));
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body
+    });
+
+    const data = await res.json();
+
+    const card = document.getElementById(cardId);
+    const contentDiv = card.querySelector(".card-content");
+
+    console.log("Echo Data:", data);
+
+    card.style.display = "block";
+    contentDiv.innerHTML = "";
+    let actualData = data.data;
+    const table = document.createElement("table");
+    table.className = "striped centered responsive-table";
+    const thead = document.createElement("thead");
+    const tbody = document.createElement("tbody");
+
+    if (data.type === "detail"){
+
+       actualData = []; 
+       
+
+        data.data.forEach(item => {
+        if (Array.isArray(item.Clicklogs) && item.Clicklogs.length > 0) {
+          const sortedLogs = item.Clicklogs.sort((a, b) => new Date(b.ClickedAt) - new Date(a.ClickedAt)); // sort DESC
+          sortedLogs.forEach(log => {
+          actualData.push({
+            ShortCode: item.ShortCode,
+            IPAddress: log.IPAddress,
+            Location: log.Location,
+            ClickedAt: log.ClickedAt
+            });
+          });
+        }
+      });
+
+
+        if (actualData.length === 0) {
+          contentDiv.innerHTML = `<p style="color: red">Data Undefined</p>`;
+          return;
+        }
+
+        
+
+          thead.innerHTML = `
+          <tr>
+            <th>Shortcode</th>
+            <th>IP Address</th>
+            <th>Location</th>
+            <th>Tanggal Klik</th>
+          </tr>
+          `;
+
+          actualData.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+            <td>${row.ShortCode}</td>
+            <td>${row.IPAddress}</td>
+            <td>${row.Location || "-"}</td>
+            <td>${new Date(row.ClickedAt).toLocaleString()}</td>
+          `;
+          tbody.appendChild(tr);
+          });
+
+    } else if(data.type === "summary"){
+
+         actualData = Array.isArray(data.data) ? data.data : [];
+        
+        if (actualData.length === 0) {
+          contentDiv.innerHTML = `<p style="color: red">Data Undefined</p>`;
+          return;
+        }
+
+         thead.innerHTML = `
+          <tr>
+            <th>Shortcode</th>
+            <th>Original URL</th>
+            <th>Total Klik</th>
+          </tr>
+        `;
+
+        actualData.forEach(row => {
+        const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${row.shortcode}</td>
+            <td><a href="${row.originalurl}" target="_blank">${row.originalurl}</a></td>
+            <td>${row.totalclicks}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+        
+      }
+
+      table.appendChild(thead);
+      table.appendChild(tbody);
+    contentDiv.appendChild(table);
+    card.scrollIntoView({ behavior: "smooth" });
+
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+}
+  
+
+document.getElementById("btnExport").addEventListener("click", () => {
+  const card = document.getElementById("cardResult");
+  const table = card.querySelector("table");
+
+  if (!table) {
+    alert("Tidak ada data untuk diexport.");
+    return;
+  }
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.table_to_sheet(table);
+  XLSX.utils.book_append_sheet(wb, ws, "Report");
+
+  const timestamp = new Date().toISOString().replace(/[:.-]/g, "");
+  XLSX.writeFile(wb, `report_${timestamp}.xlsx`);
+});
+
+  
+  </script>
+
+
+
+{{end}}
