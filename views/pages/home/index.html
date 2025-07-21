@@ -12,7 +12,7 @@ Dashboard
               <i class="material-icons medium">auto_stories</i>
             </div>
             <div class="card-action">
-              <p style="font-size: 30px; margin: 0; padding: 0;">0</p>
+              <p style="font-size: 30px; margin: 0; padding: 0;">{{ .Created }}</p>
             </div>
           </div>
     </div>
@@ -23,7 +23,7 @@ Dashboard
               <i class="material-icons medium">ads_click</i>
             </div>
             <div class="card-action">
-              <p style="font-size: 30px; margin: 0; padding: 0;">0</p>
+              <p style="font-size: 30px; margin: 0; padding: 0;">{{ .Click }}</p>
             </div>
           </div>
     </div>
@@ -34,7 +34,7 @@ Dashboard
               <i class="material-icons medium">tune</i>
             </div>
             <div class="card-action">
-              <p style="font-size: 30px; margin: 0; padding: 0;">0</p>
+              <p style="font-size: 30px; margin: 0; padding: 0;">{{ .Custom }}</p>
             </div>
           </div>
     </div>
@@ -46,14 +46,19 @@ Dashboard
           </div>
     </div>
     <script>
+   
   const ctx = document.getElementById('myChart').getContext('2d');
+
+    const labels = JSON.parse('{{ .LabelsJSON }}');
+    const chart = JSON.parse('{{ .ChartJSON }}');
+
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['Jan', 'Feb', 'Mar'],
+      labels: labels,
       datasets: [{
         label: 'Clicker',
-        data: [10, 20, 15],
+        data: chart,
         backgroundColor: '#3949ab',     // primary
         borderRadius: 5,
         borderSkipped: false
