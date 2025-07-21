@@ -41,7 +41,7 @@ func SetupRoutes() *mux.Router {
 	r.Handle("/shortlink/destroy/{id}", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.ShortLinkDestroy))).Methods("POST")
 	r.Handle("/shortlink/detail/{id}", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.ShortLinkDetail))).Methods("GET")
 	r.Handle("/shortlink/update/{id}", middleware.AfterLoginMiddleware(http.HandlerFunc(handlers.ShortLinkUpdate))).Methods("POST")
-	r.HandleFunc("/rj/{code}", handlers.RedirectClickLogs).Methods("GET")
+	r.HandleFunc("/{code}", handlers.RedirectClickLogs).Methods("GET")
 
 	return r
 }

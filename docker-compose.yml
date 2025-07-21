@@ -9,6 +9,8 @@ services:
       - "8080:8080"         # ✅ letakkan di sini, bukan di bawah `command`
     depends_on:
       - db
+    env_file:
+      - .env
     environment:
       DB_HOST: db
       DB_PORT: 5432

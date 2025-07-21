@@ -2,7 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"shortb/config"
 	"shortb/middleware"
 	"shortb/models"
@@ -40,6 +43,11 @@ func IndexShortLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	dsn := os.Getenv("HOSTING_URL")
+	if dsn == "" {
+		log.Fatalf("HOSTING UNDEFINED")
+	}
+
 	var dataWithClicks []ShortlinkWithClicks
 
 	for _, link := range links {
@@ -55,9 +63,12 @@ func IndexShortLink(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	fmt.Println("test:", dsn)
+
 	data := map[string]interface{}{
 		"User": user,
 		"Data": dataWithClicks,
+		"Dsn":  dsn,
 	}
 
 	utils.RenderTemplate(w, "views/pages/shortlink/index.html", data)
@@ -101,7 +112,7 @@ func ShortLinkStore(w http.ResponseWriter, r *http.Request) {
 
 	var input ShortlinkProps
 	err := json.NewDecoder(r.Body).Decode(&input)
-	if err != nil || input.OriginalURL == "" || input.CDomain == "" {
+	if err != nil || input.OriginalURL == "" {
 		http.Error(w, "Invalid Input", http.StatusBadRequest)
 		return
 	}
@@ -110,7 +121,7 @@ func ShortLinkStore(w http.ResponseWriter, r *http.Request) {
 		UserID:       user.ID,
 		OriginalUrl:  &input.OriginalURL,
 		ShortCode:    utils.GenerateShortCode(6),
-		CustomDomain: input.CDomain,
+		CustomDomain: &input.CDomain,
 	}
 
 	state := config.DB.Create(&data)
@@ -169,13 +180,13 @@ func ShortLinkUpdate(w http.ResponseWriter, r *http.Request) {
 
 	var input ShortlinkUpdateProps
 	err = json.NewDecoder(r.Body).Decode(&input)
-	if err != nil || input.CDomain == "" {
+	if err != nil {
 		http.Error(w, "Something Wrong", http.StatusBadRequest)
 		return
 	}
 
 	data := models.Shortlink{
-		CustomDomain: input.CDomain,
+		CustomDomain: &input.CDomain,
 	}
 	state := config.DB.Model(&models.Shortlink{}).Where("id = ? AND user_id = ?", id, user.ID).Updates(&data)
 

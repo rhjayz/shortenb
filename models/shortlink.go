@@ -9,7 +9,7 @@ type Shortlink struct {
 	UserID       uint
 	OriginalUrl  *string `gorm:"type:text"`
 	ShortCode    string
-	CustomDomain string
+	CustomDomain *string `gorm:"type:text;null"`
 
 	User      User        `gorm:"constraint:OnDelete:CASCADE;"`
 	Clicklogs []Clicklogs `gorm:"foreignKey:ShortlinkID"`
